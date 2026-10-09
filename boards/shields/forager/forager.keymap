@@ -83,7 +83,7 @@
 
         base {
             bindings = <
-            &kp Q           &kp W           &kp F           &kp P           &kp B                                           &kp J           &kp L           &kp U           &kp Y           AS(SEMI)
+            &studio_unlock  &kp W           &kp F           &kp P           &kp B                                           &kp J           &kp L           &kp U           &kp Y           AS(SEMI)
             &kp A           &lhm LCTRL R    &lhm LALT S     &lhm LGUI T     &kp G                                           &kp M           &rhm LGUI N     &rhm LALT E     &rhm LCTRL I    &kp O
             &kp Z           &kp X           &kp C           &kp D           &kp V                                           &kp K           &kp H           AS(COMMA)       AS(DOT)         AS(FSLH)
                                                                             &sym_bspc 2 0   &smart_shift    &smart_shift    &lt NAV SPACE
