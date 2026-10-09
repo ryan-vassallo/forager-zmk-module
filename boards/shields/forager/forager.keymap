@@ -11,6 +11,16 @@
 #define MOUSE 4
 
 / {
+    macros {
+        qq: type_two_qs {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <20>;
+            tap-ms = <20>;
+            bindings = <&macro_tap &kp Q &kp Q>;
+        };
+    };
+
     behaviors {
         lhm: left_homerow_mods {
             compatible = "zmk,behavior-hold-tap";
@@ -40,7 +50,7 @@
             hold-trigger-on-release;
         };
 
-        // generic tap/hold behavior: first param = hold, second = tap
+        // generic hold-tap: first param = hold, second = tap
         kth: key_tap_hold {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -48,6 +58,57 @@
             tapping-term-ms = <200>;
             quick-tap-ms = <175>;
             bindings = <&kp>, <&kp>;
+        };
+
+        // hold-tap for dance internals
+        dance_ht: dance_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <0>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        // NUM row1 col1:
+        // single tap -> F1
+        // double tap -> GRAVE
+        f1_grave_td: f1_grave_tap_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <220>;
+            bindings = <&kp F1>, <&kp GRAVE>;
+        };
+
+        // Base Q tap dance:
+        // single tap -> Q
+        // double tap -> QQ
+        // double-tap-hold -> ESC
+        q_double: q_double_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <0>;
+            bindings = <&kp ESC>, <&qq>;
+        };
+
+        q_dance: q_tap_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <220>;
+            bindings = <&kp Q>, <&q_double ESC 0>;
+        };
+
+        // Base semicolon tap dance:
+        // single tap -> SEMI
+        // hold -> RGUI
+        // double tap -> SQT
+        semi_dance: semicolon_tap_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <220>;
+            bindings = <&dance_ht RGUI SEMI>, <&kp SQT>;
         };
     };
 
@@ -57,11 +118,11 @@
         base {
             display-name = "Base";
             bindings = <
-                &kp Q         &kp W         &kp E         &kp R         &kp T
+                &q_dance      &kp W         &kp E         &kp R         &kp T
                 &kp Y         &kp U         &kp I         &kp O         &kp P
 
                 &lhm LGUI A   &lhm LALT S   &lhm LCTRL D  &lhm LSHFT F  &kp G
-                &kp H         &rhm RSHFT J  &rhm RCTRL K  &rhm RALT L   &rhm RGUI SEMI
+                &kp H         &rhm RSHFT J  &rhm RCTRL K  &rhm RALT L   &semi_dance
 
                 &kp Z         &kp X         &kp C         &kp V         &kp B
                 &kp N         &kp M         &kp COMMA     &kth HASH DOT &kth BSLH FSLH
@@ -89,7 +150,7 @@
         numbers {
             display-name = "Numbers";
             bindings = <
-                &kth F1 GRAVE &kp F2        &kp F3        &kp F4        &kp F5
+                &f1_grave_td  &kp F2        &kp F3        &kp F4        &kp F5
                 &kp N7        &kp N8        &kp N9        &kp EQUAL     &kp MINUS
 
                 &kp F6        &kp F7        &kp F8        &kp F9        &kp F10
@@ -105,16 +166,16 @@
         navigation {
             display-name = "Navigation";
             bindings = <
-                &trans        &trans        &kp C_MUTE    &kp C_VOL_DN  &kp C_VOL_UP
-                &kp PG_UP     &kp HOME      &kp UP        &kp END       &trans
+                &trans        &trans        &kp C_MUTE      &kp C_VOL_DN    &kp C_VOL_UP
+                &kp PG_UP     &kp HOME      &kp UP          &kp END         &trans
 
-                &kp LGUI      &kp LALT      &kp LCTRL     &kp LSHFT     &trans
-                &kp PG_DN     &kp LEFT      &kp DOWN      &kp RIGHT     &trans
+                &kp LGUI      &kp LALT      &kp LCTRL       &kp LSHFT       &trans
+                &kp PG_DN     &kp LEFT      &kp DOWN        &kp RIGHT       &trans
 
-                &trans        &kp C_PREV    &kp C_NEXT    &kp C_STOP    &kp C_PP
-                &trans        &kp LC(LS(TAB)) &kp LC(TAB)  &trans        &trans
+                &trans        &kp C_PREV    &kp C_NEXT      &kp C_STOP      &kp C_PP
+                &trans        &kp LC(LS(TAB)) &kp LC(TAB)   &trans          &trans
 
-                &trans        &trans        &trans        &trans
+                &trans        &trans        &trans          &trans
             >;
         };
 
