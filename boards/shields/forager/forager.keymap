@@ -10,6 +10,8 @@
 #define NAV   3
 #define MOUSE 4
 
+#define TAP_TERM_MS 175
+
 / {
     macros {
         qq: type_two_qs {
@@ -26,7 +28,7 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
-            tapping-term-ms = <280>;
+            tapping-term-ms = <TAP_TERM_MS>;
             quick-tap-ms = <175>;
             require-prior-idle-ms = <150>;
             bindings = <&kp>, <&kp>;
@@ -40,7 +42,7 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "balanced";
-            tapping-term-ms = <280>;
+            tapping-term-ms = <TAP_TERM_MS>;
             quick-tap-ms = <175>;
             require-prior-idle-ms = <150>;
             bindings = <&kp>, <&kp>;
@@ -50,64 +52,81 @@
             hold-trigger-on-release;
         };
 
-        // generic hold-tap: first param = hold, second = tap
+        // Backspace thumb:
+        // Tap: Backspace.
+        // Hold: Mouse layer.
+        // Tap, then immediately press and hold: held Backspace.
+        //
+        // This separate behavior leaves Tab and Space unchanged.
+        bsp_mouse: backspace_mouse_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <TAP_TERM_MS>;
+            quick-tap-ms = <175>;
+            bindings = <&mo>, <&kp>;
+        };
+
+        // First parameter: hold keycode.
+        // Second parameter: tap keycode.
         kth: key_tap_hold {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <200>;
+            tapping-term-ms = <TAP_TERM_MS>;
             quick-tap-ms = <175>;
             bindings = <&kp>, <&kp>;
         };
 
-        // hold-tap for dance internals
         dance_ht: dance_hold_tap {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <200>;
+            tapping-term-ms = <TAP_TERM_MS>;
             quick-tap-ms = <0>;
             bindings = <&kp>, <&kp>;
         };
 
-        // NUM row1 col1:
-        // single tap -> F1
-        // double tap -> GRAVE
+        // Numbers-layer first key:
+        // Single tap: F1.
+        // Double tap: backtick.
         f1_grave_td: f1_grave_tap_dance {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <220>;
+            tapping-term-ms = <TAP_TERM_MS>;
             bindings = <&kp F1>, <&kp GRAVE>;
         };
 
-        // Base Q tap dance:
-        // single tap -> Q
-        // double tap -> QQ
-        // double-tap-hold -> ESC
+        // Second Q press:
+        // Tap: type qq.
+        // Hold: Escape, supplied by the invocation.
         q_double: q_double_hold_tap {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <200>;
+            tapping-term-ms = <TAP_TERM_MS>;
             quick-tap-ms = <0>;
             bindings = <&kp>, <&qq>;
         };
 
+        // Base first key:
+        // Single tap: q.
+        // Double tap: qq.
+        // Tap, then press and hold: Escape.
         q_dance: q_tap_dance {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <220>;
+            tapping-term-ms = <TAP_TERM_MS>;
             bindings = <&kp Q>, <&q_double ESC 0>;
         };
 
-        // Base semicolon tap dance:
-        // single tap -> SEMI
-        // hold -> RGUI
-        // double tap -> SQT
+        // Single tap: semicolon.
+        // Single hold: Right GUI.
+        // Double tap: quote.
         semi_dance: semicolon_tap_dance {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <220>;
+            tapping-term-ms = <TAP_TERM_MS>;
             bindings = <&dance_ht RGUI SEMI>, <&kp SQT>;
         };
     };
@@ -127,7 +146,7 @@
                 &kp Z         &kp X         &kp C         &kp V         &kp B
                 &kp N         &kp M         &kp COMMA     &kth HASH DOT &kth BSLH FSLH
 
-                &lt NUM TAB   &mo BT        &lt MOUSE BSPC &lt NAV SPACE
+                &lt NUM TAB   &mo BT        &bsp_mouse MOUSE BSPC &lt NAV SPACE
             >;
         };
 
@@ -166,16 +185,16 @@
         navigation {
             display-name = "Navigation";
             bindings = <
-                &trans        &trans        &kp C_MUTE      &kp C_VOL_DN    &kp C_VOL_UP
-                &kp PG_UP     &kp HOME      &kp UP          &kp END         &trans
+                &trans        &trans        &kp C_MUTE    &kp C_VOL_DN  &kp C_VOL_UP
+                &kp PG_UP     &kp HOME      &kp UP        &kp END       &trans
 
-                &kp LGUI      &kp LALT      &kp LCTRL       &kp LSHFT       &trans
-                &kp PG_DN     &kp LEFT      &kp DOWN        &kp RIGHT       &trans
+                &kp LGUI      &kp LALT      &kp LCTRL     &kp LSHFT     &trans
+                &kp PG_DN     &kp LEFT      &kp DOWN      &kp RIGHT     &trans
 
-                &trans        &kp C_PREV    &kp C_NEXT      &kp C_STOP      &kp C_PP
-                &trans        &kp LC(LS(TAB)) &kp LC(TAB)   &trans          &trans
+                &trans        &kp C_PREV    &kp C_NEXT    &kp C_STOP    &kp C_PP
+                &trans        &kp LC(LS(TAB)) &kp LC(TAB)  &trans        &trans
 
-                &trans        &trans        &trans          &trans
+                &trans        &trans        &trans        &trans
             >;
         };
 
@@ -198,5 +217,5 @@
 };
 
 &lt {
-    tapping-term-ms = <200>;
+    tapping-term-ms = <TAP_TERM_MS>;
 };
